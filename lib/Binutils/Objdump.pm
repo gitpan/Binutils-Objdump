@@ -5,21 +5,25 @@
 #
 package Binutils::Objdump;
 
-our $VERSION = '0.0.1';
+our $VERSION = '0.0.2';
 
 our @ISA = qw(Exporter);
 our @EXPORT = qw(objdump objdumpopt objdumpwrap);
 our @EXPORT_OK = qw(objdump objdumpopt objdumppath objdumpwrap 
-objdump_dynamic_reloc_info objdump_symtab objdump_section_headers objdump_dynamic_symtab objdump_sec_contents objdump_sec_disasm);
+		    objdump_dynamic_reloc_info objdump_symtab
+		    objdump_section_headers objdump_dynamic_symtab
+		    objdump_sec_contents objdump_sec_disasm
+    );
 our %EXPORT_TAGS = (
     ALL => [qw(objdump objdumpopt objdumppath objdumpwrap 
-objdump_dynamic_reloc_info objdump_symtab objdump_section_headers objdump_dynamic_symtab objdump_sec_contents objdump_sec_disasm)],
-);
+	       objdump_dynamic_reloc_info objdump_symtab objdump_section_headers
+	       objdump_dynamic_symtab objdump_sec_contents objdump_sec_disasm)],
+    );
 
 use strict;
 use warnings;
 
-# Constants.
+# Constants
 use constant DEF_WRAPPER => 0; # default wrapper
 use constant USR_WRAPPER => 1; # user's wrapper
 
@@ -137,8 +141,7 @@ my $objdumpoptstr;
 
 sub objdumpopt
 {
-    # If none options defined, then return current
-    # string of options.
+    # If none options defined, then return current string of options
     if (!scalar(@_)) {
         return $objdumpoptstr || "";
     }
@@ -231,76 +234,87 @@ Binutils::Objdump - Perl interface to Binutils objdump
 
 =head1 DESCRIPTION
 
-I<objdump> displays  information  about  one or more object files. The options 
-control what particular information to display.  This information is mostly 
-useful to programmers who are working on the compilation tools, as  opposed  to
+I<objdump> displays  information  about  one or more object files. The options
+control what particular information to display. This information is mostly 
+useful to programmers who are working on the compilation tools, as opposed to
 programmers who just want their program to compile and work.
 
-This module provides wrappers for the objdump output information parts, specified by 
-special labels. To each part correspond a special wrapper, which can be extended by your own.
+This module provides wrappers for the objdump output information parts,
+specified by special labels. To each part correspond a special wrapper, which
+can be extended by your own.
 
-The script C<odasm> is an example of disassembler based on C<Binutils::Objdump> module.
+The script C<odasm> is an example of disassembler based on L<Binutils::Objdump>
+module.
 
 =head2 Functions
 
-B<objdumppath([PATH])>
+=over
 
-Sets the new path to objdump if C<PATH> defined. Returns current path to the objdump executeable file.
-By default this path will be defined automatically, but if you have another location for it, you may 
-change it.
+=item B<objdumppath([$path])>
 
-B<objdumpopt([OPTIONS])>
+Sets the new path to objdump if C<$path> defined. Returns current path to the
+objdump executeable file. By default this path will be defined automatically,
+but if you have another location for it, you may change it.
 
-Builds a new string of options if C<OPTIONS> defined. Returns options for objdump in string format. 
+=item B<objdumpopt([$optstr])>
+
+Builds a new string of options if C<$optstr> defined. Returns options for
+objdump in string format. 
 
 For example, options can be taken from C<@ARGV>.
 
-B<objdump([OBJFILES])>
+=item B<objdump([@objfules])>
 
-Executes C<objdump> with string of options C<objdumpopt()> and  object files C<OBJFILES>, 
-that have to be examinated. Returns the whole information about one or more object files.
+Executes C<objdump> with string of options C<objdumpopt()> and  object files
+C<@objfiles>, that have to be examinated. Returns the whole information about
+one or more object files.
+ 
+By default, if none of object files will not be set, will be used default object
+file I<a.out> from the current location.
 
-By default, if none of object files will not be set, will be used default 
-object file I<a.out> from the current location.
+=item B<objdumpwrap($label, \&wrapper)>
 
-B<objdumpwrap(LABEL, WRAPPER)>
+Defines a special wrapper C<\&wrapper> for the correspond label C<LABEL>.
+Notice, that default wrapper will not be replaced, and so, can be used.
 
-Defines a special wrapper C<WRAPPER> for the correspond label C<LABEL>. Notice, that default 
-wrapper will not be replaced, and so, can be used.
+When a label appears, the following lines will be saved till the next matched
+label. Then this lines will be passed to appropriate wrappers. Be carefull with
+default labels (if some label includes another, they will be merged).
 
-When a label appears, the following lines will be saved till the next matched label. 
-Then this lines will be passed to appropriate wrappers. Be carefull with default labels 
-(if some label includes another, they will be merged).
-
-B<objdump_dynamic_symtab()>
+=item B<objdump_dynamic_symtab()>
 
 Default wrapper for dynamic symbol table. Returns lines.
 
-B<objdump_section_headers()>
+=item B<objdump_section_headers()>
 
 Default wrapper for summary information from the section headers of the object file. 
 Returns lines.
 
-B<objdump_symtab()>
+=item B<objdump_symtab()>
 
 Default wrapper for symbol table entries of the file. Returns lines.
 
-B<objdump_dynamic_reloc_info()>
+=item B<objdump_dynamic_reloc_info()>
 
 Default wrapper for dynamic relocation entries of the file. Returns lines.
 
-B<objdump_sec_contents(SECTION)>
+=item B<objdump_sec_contents($section)>
 
-Default wrapper for contents of section C<SECTION>. Returns lines for correspond section.
+Default wrapper for contents of section C<$section>. Returns lines for
+correspond section.
 
-B<objdump_sec_disasm(SECTION)>
+=item B<objdump_sec_disasm($section)>
 
-Default wrapper for disassembly of section C<SECTION>. Returns lines for correspond section.
+Default wrapper for disassembly of section C<$section>. Returns lines for
+correspond section.
+
+=back
 
 =head2 Exports
 
-By default will be exported C<objdump>, C<objdumpopt> and C<objdumpwrap>. The following tags can be used 
-to selectively import functions defined in this module:
+By default will be exported C<objdump>, C<objdumpopt> and C<objdumpwrap>. The
+following tags can be used to selectively import functions defined in this
+module:
 
     :ALL    objdump() objdumpopt() objdumppath() objdumpwrap() 
             objdump_dynamic_reloc_info() objdump_symtab() objdump_section_headers() 
@@ -314,9 +328,10 @@ Slade Maurer, E<lt>slade@computer.orgE<gt>
 
 =head1 COPYRIGHT
 
-The Binutils::Objdump module is Copyright (c) 2009 Slade Maurer, Alexander Sviridenko. All rights reserved.
+The Binutils::Objdump module is Copyright (c) 2009 Slade Maurer,
+Alexander Sviridenko. All rights reserved.
 
-You may distribute under the terms of either the GNU General Public License or 
+You may distribute under the terms of either the GNU General Public License or
 the Artistic License, as specified in the Perl 5.10.0 README file.
 
 =cut

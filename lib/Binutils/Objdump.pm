@@ -5,7 +5,7 @@
 #
 package Binutils::Objdump;
 
-our $VERSION = '0.1.0';
+our $VERSION = '0.1.1';
 
 our @ISA = qw(Exporter);
 our @EXPORT = qw(objdump objdumpopt objdumpwrap);

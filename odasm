@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 #
-# Copyright (c) 2009 Slade Maurer, Alexander Sviridenko. All rights reserved.
+# Copyright (c) 2009, 2011 Slade Maurer, Alexander Sviridenko. All rights reserved.
 # (see the pod text in Binutils::Objdump module for use and distribution rights)
 #
 
-our $VERSION = '0.0.1';
+our $VERSION = '0.1.2';
 
 use Getopt::Long;
 use Binutils::Objdump qw(:ALL);
@@ -21,7 +21,7 @@ if (!-e $input || !-f $input) {
 }
 
 objdumpopt("-dTx --prefix-addresses");
-objdump();
+objdump($input);
 
 # Reading strings ...
 
@@ -154,7 +154,7 @@ sub print_version
 {
     print "odasm $VERSION\n";
     print "Binutils::Objdump $Binutils::Objdump::VERSION\n\n";
-    print "Copyright (c) 2009 Slade Maurer, Alexander Sviridenko. All rights reserved.\n";
+    print "Copyright (c) 2009, 2011 Slade Maurer, Alexander Sviridenko. All rights reserved.\n";
     print "(see the pod text in Binutils::Objdump module for use and distribution rights)\n";
     exit(0);
 }
@@ -183,13 +183,13 @@ references to strings, references from C<jump>s and C<call>s.
 
 =head1 AUTHORS
 
-Alexander Sviridenko <mail@d2rk.com>
+Alexander Sviridenko <oleks.sviridenko@gmail.com>
 
 Slade Maurer <slade@computer.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009 Slade Maurer, Alexander Sviridenko. All rights reserved.
+Copyright (c) 2009, 2011 Slade Maurer, Alexander Sviridenko. All rights reserved.
 (see the pod text in L<Binutils::Objdump> module for use and distribution rights)
 
 =head1 SEE ALSO

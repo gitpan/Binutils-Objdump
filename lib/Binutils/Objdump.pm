@@ -1,11 +1,11 @@
 #
-# Copyright (c) 2009  Slade Maurer, Alexander Sviridenko
+# Copyright (c) 2009, 2011  Slade Maurer, Alexander Sviridenko
 #
 # See COPYRIGHT section in pod text below for usage and distribution rights.
 #
 package Binutils::Objdump;
 
-our $VERSION = '0.1.1';
+our $VERSION = '0.1.2';
 
 our @ISA = qw(Exporter);
 our @EXPORT = qw(objdump objdumpopt objdumpwrap);
@@ -158,7 +158,7 @@ sub objdump
     # Update information.
     %objdumpinfo = ();
 
-    # If objdump cannot be found, then print an 
+    # If objdump cannot be found, then print an
     # error message and die.
     if (!-e objdumppath() || !-f objdumppath()) {
         die "Objdump '". objdumppath() ."' cannot be found.\n";
@@ -169,35 +169,41 @@ sub objdump
         push @objfiles, $default_objfile;
     }
 
-    my $cmd = join(' ', objdumppath(), objdumpopt(), '2>&1');
-    my $info = `$cmd`;
-    my @lines = split /\n/, $info;
+    my @infos = ();
+    foreach my $objfile (@objfiles) {
+        my $cmd = join(' ', objdumppath(), objdumpopt(), $objfile, '2>&1');
+	my $info = `$cmd`;
 
-    my @buff = ();
-    my %passed_labels = ();
-    my $label;
-    my $wrappers;
+        my @lines = split /\n/, $info;
 
-  LINE: while (scalar(@lines)) {
-      my $line = shift @lines;
-      do {
-	  foreach (keys %objdumpwrappers) {
-	      next if defined $passed_labels{$_};
-	      if ($line =~/$_/) {
-		  do { for (@$wrappers) { $_->(@buff) if defined $_ } } if defined $wrappers;
-		  @buff = ();
-		  ($label, $wrappers) = ($_, $objdumpwrappers{$_});
-		  $passed_labels{$label}++;
-		  next LINE;
-	      }
-	  }
-      } if (scalar(keys %passed_labels) < scalar(keys %objdumpwrappers));
-      push @buff, $line;
-  }
-    # Run the last wrapper if such defined...
-    do { for (@$wrappers) { $_->(@buff) if defined $_ } } if defined $wrappers;
-    
-    return $info;
+        my @buff = ();
+        my %passed_labels = ();
+        my $label;
+        my $wrappers;
+
+      LINE: while (scalar(@lines)) {
+          my $line = shift @lines;
+          do {
+              foreach (keys %objdumpwrappers) {
+                  next if defined $passed_labels{$_};
+                  if ($line =~/$_/) {
+                      do { for (@$wrappers) { $_->(@buff) if defined $_ } } if defined $wrappers;
+                      @buff = ();
+                      ($label, $wrappers) = ($_, $objdumpwrappers{$_});
+                      $passed_labels{$label}++;
+                      next LINE;
+                  }
+              }
+          } if (scalar(keys %passed_labels) < scalar(keys %objdumpwrappers));
+          push @buff, $line;
+        }
+        # Run the last wrapper if such defined...
+        do { for (@$wrappers) { $_->(@buff) if defined $_ } } if defined $wrappers;
+
+	push @infos, $info;
+    }
+
+    return @infos;
 }
 
 sub objdump_dynamic_reloc_info { if (defined (my $lines = $objdumpinfo{'dynamic relocation records'})) { return @$lines } }
@@ -322,13 +328,13 @@ module:
 
 =head1 AUTHORS
 
-Alexander Sviridenko, E<lt>mail@d2rk.comE<gt>
+Alexander Sviridenko, E<lt>oleks.sviridenko@gmail.comE<gt>
 
 Slade Maurer, E<lt>slade@computer.orgE<gt>
 
 =head1 COPYRIGHT
 
-The Binutils::Objdump module is Copyright (c) 2009 Slade Maurer,
+The Binutils::Objdump module is Copyright (c) 2009, 2011 Slade Maurer,
 Alexander Sviridenko. All rights reserved.
 
 You may distribute under the terms of either the GNU General Public License or

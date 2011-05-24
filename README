@@ -1,5 +1,5 @@
-Binutils-Objdump version 0.01
-=============================
+Binutils-Objdump version 0.1.2
+==============================
 
 Binutils::Objdump - Perl interface to Binutils objdump
 
@@ -24,7 +24,7 @@ To install this module type the following:
 
 COPYRIGHT AND LICENCE
 
-Copyright (c) 2009 by Alexander Sviridenko and Slade Maurer
+Copyright (c) 2009, 2011 by Alexander Sviridenko and Slade Maurer
 (see the Copyright section in Objdump.pm for usage and distribution rights)
 
 
